@@ -1,0 +1,19 @@
+# Project TODO
+
+- [x] Define database tables for authenticated users' conversation sessions and messages.
+- [x] Apply the database migration for conversation persistence.
+- [x] Implement owner-only authorization guards for all chat and conversation endpoints.
+- [x] Add model discovery and a model selector backed by the configured LLM catalog.
+- [x] Implement a server-side true streamed chat endpoint that persists user and assistant messages.
+- [x] Implement session creation, session listing, message history retrieval, and conversation clearing.
+- [x] Build a refined dark mobile-first chat interface with a scrollable transcript and fixed composer.
+- [x] Render genuine streamed model output incrementally with Markdown formatting and visible typing/loading states.
+- [x] Add accessible model selection, new-chat, and clear-conversation controls.
+- [x] Add responsive desktop support without compromising the phone-first layout.
+- [x] Write Vitest coverage for owner-only authorization, session persistence helpers, and chat request validation.
+- [x] Run type checks and automated tests.
+- [x] Verify the completed mobile and desktop interface visually.
+- [x] Visually verify the owner-authenticated desktop workspace, including navigation, model selector, and fixed composer.
+- [x] Visually verify the owner-authenticated mobile workspace, including the phone-scale composer and controls.
+- [x] Verify the LLM proxy returns genuine upstream SSE delta events before persistence.
+- [x] Create a final project checkpoint for deployment.

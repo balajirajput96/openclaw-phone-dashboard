@@ -71,6 +71,15 @@ export type InvokeParams = {
   reasoning?: Record<string, unknown>;
 };
 
+export type LLMStreamChunk = {
+  choices?: Array<{
+    delta?: {
+      content?: string | null;
+    };
+    finish_reason?: string | null;
+  }>;
+};
+
 export type ToolCall = {
   id: string;
   type: "function";
@@ -418,6 +427,110 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   }
 
   return (await response.json()) as InvokeResult;
+}
+
+/**
+ * Proxies genuine upstream SSE deltas for interactive chat experiences. The
+ * callback is invoked only for text deltas; the completed text is returned so
+ * callers can persist the final assistant message after the stream settles.
+ */
+export async function invokeLLMStream(
+  params: InvokeParams,
+  onDelta: (delta: string) => void,
+  signal?: AbortSignal
+): Promise<string> {
+  assertApiKey();
+
+  const {
+    messages,
+    tools,
+    toolChoice,
+    tool_choice,
+    outputSchema,
+    output_schema,
+    responseFormat,
+    response_format,
+    model,
+    thinking,
+    reasoning,
+    maxTokens,
+    max_tokens,
+  } = params;
+  const payload: Record<string, unknown> = {
+    messages: messages.map(normalizeMessage),
+    stream: true,
+  };
+
+  if (model) payload.model = model;
+  if (tools && tools.length > 0) payload.tools = tools;
+
+  const normalizedToolChoice = normalizeToolChoice(toolChoice || tool_choice, tools);
+  if (normalizedToolChoice) payload.tool_choice = normalizedToolChoice;
+
+  const resolvedMaxTokens = max_tokens ?? maxTokens;
+  if (typeof resolvedMaxTokens === "number") payload.max_tokens = resolvedMaxTokens;
+  if (thinking) payload.thinking = thinking;
+  if (reasoning) payload.reasoning = reasoning;
+
+  const normalizedResponseFormat = normalizeResponseFormat({
+    responseFormat,
+    response_format,
+    outputSchema,
+    output_schema,
+  });
+  if (normalizedResponseFormat) payload.response_format = normalizedResponseFormat;
+
+  const response = await fetchWithBackoff(resolveApiUrl(), {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      accept: "text/event-stream",
+      authorization: `Bearer ${ENV.forgeApiKey}`,
+    },
+    body: JSON.stringify(payload),
+    signal,
+  });
+
+  if (!response.ok || !response.body) {
+    const errorText = await response.text();
+    throw new Error(`LLM stream failed: ${response.status} ${response.statusText} – ${errorText}`);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let completed = "";
+
+  const processFrame = (frame: string) => {
+    const data = frame
+      .split("\n")
+      .filter(line => line.startsWith("data: "))
+      .map(line => line.slice(6))
+      .join("\n");
+    if (!data || data === "[DONE]") return;
+    const chunk = JSON.parse(data) as LLMStreamChunk;
+    const delta = chunk.choices?.[0]?.delta?.content;
+    if (typeof delta === "string" && delta.length > 0) {
+      completed += delta;
+      onDelta(delta);
+    }
+  };
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const frames = buffer.split("\n\n");
+      buffer = frames.pop() ?? "";
+      frames.forEach(processFrame);
+    }
+    if (buffer.trim()) processFrame(buffer);
+  } finally {
+    reader.releaseLock();
+  }
+
+  return completed;
 }
 
 export type ModelInfo = {
