@@ -17,5 +17,5 @@
 - [x] Visually verify the owner-authenticated mobile workspace, including the phone-scale composer and controls.
 - [x] Verify the LLM proxy returns genuine upstream SSE delta events before persistence.
 - [x] Create a final project checkpoint for deployment.
-- [ ] Create a private GitHub repository and push the completed project.
-- [ ] Confirm the published website domain for the user.
+- [x] Create a private GitHub repository and push the completed project.
+- [x] Confirm the published website domain for the user.
