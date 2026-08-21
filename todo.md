@@ -22,3 +22,6 @@
 - [x] Audit current Git/GitHub state, project workflows, and dependency alerts.
 - [x] Re-run build, type checks, automated tests, and production build validation.
 - [x] Repair only verified project issues and synchronize any changes to GitHub.
+- [ ] Add an hourly GitHub Actions health-check workflow for deterministic project validation.
+- [ ] Manually run and verify the GitHub Actions health-check workflow.
+- [ ] Document how to monitor and disable the recurring GitHub workflow.
