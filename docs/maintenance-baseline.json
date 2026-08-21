@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "project": "openclaw-phone-dashboard",
+  "repository": "balajirajput96/openclaw-phone-dashboard",
+  "branch": "main",
+  "automation": {
+    "workflow": ".github/workflows/hourly-health.yml",
+    "trigger": "hourly at minute 17 UTC plus manual dispatch",
+    "maximumRuns": 2400,
+    "permissions": "contents: read",
+    "automaticCodeChanges": false,
+    "validations": [
+      "pnpm install --frozen-lockfile",
+      "pnpm check",
+      "pnpm test",
+      "pnpm build"
+    ]
+  },
+  "verified": {
+    "ownerOnlyChat": true,
+    "persistentConversationStorage": true,
+    "llmStreaming": "upstream SSE proxy",
+    "localBuild": "passed with bounded Node heap",
+    "typeCheck": "passed",
+    "unitTests": "7 passed",
+    "githubWorkflowConfigured": true,
+    "githubActionsEnabled": true
+  },
+  "relevantIntegrations": {
+    "github": "configured and repository synchronized",
+    "manusOAuth": "owner-only application authentication",
+    "builtInLLM": "server-side streamed completion proxy"
+  },
+  "unresolved": [
+    {
+      "kind": "external-runner-allocation",
+      "workflowRun": "32530071100",
+      "status": "queued",
+      "description": "GitHub accepted the dispatched workflow but did not assign an ubuntu-latest hosted runner."
+    }
+  ],
+  "safety": {
+    "noCredentialValuesRecorded": true,
+    "noAutomaticDependencyUpgrades": true,
+    "noAutomaticRepositoryPushesFromScheduledWorkflow": true
+  }
+}
