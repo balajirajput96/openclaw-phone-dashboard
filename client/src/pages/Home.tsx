@@ -1,7 +1,8 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { startLogin } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Streamdown } from "streamdown";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   Bot,
   Check,
@@ -335,7 +336,7 @@ export default function Home() {
                       <div className={`min-w-0 ${message.role === "user" ? "max-w-[82%] sm:max-w-[70%]" : "max-w-[90%] sm:max-w-[82%]"}`}>
                         <div className={`rounded-2xl px-4 py-3 text-[14px] leading-6 ${message.role === "user" ? "rounded-tr-md bg-indigo-500 text-white shadow-lg shadow-indigo-950/25" : "rounded-tl-md border border-white/[.065] bg-white/[.045] text-slate-200"}`}>
                           {message.role === "assistant" ? (
-                            message.pending && !message.content ? <TypingIndicator label={streamState === "thinking" ? "Thinking" : "Writing"} /> : <div className="markdown-response"><Streamdown>{message.content}</Streamdown>{message.pending && <span className="ml-1 inline-block size-1.5 animate-pulse rounded-full bg-indigo-200 align-middle" />}</div>
+                            message.pending && !message.content ? <TypingIndicator label={streamState === "thinking" ? "Thinking" : "Writing"} /> : <div className="markdown-response"><ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>{message.pending && <span className="ml-1 inline-block size-1.5 animate-pulse rounded-full bg-indigo-200 align-middle" />}</div>
                           ) : <p className="whitespace-pre-wrap">{message.content}</p>}
                         </div>
                         <p className={`mt-1.5 px-1 font-mono text-[9px] uppercase tracking-[.12em] text-slate-600 ${message.role === "user" ? "text-right" : ""}`}>{message.role === "assistant" ? "OpenClaw" : "You"} · {index === messages.length - 1 ? "Now" : formatTime()}</p>

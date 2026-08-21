@@ -28,3 +28,9 @@
 - [x] Resolve the GitHub-hosted runner queue and confirm a completed manual validation run.
 - [x] Inventory recoverable project history, automation state, and relevant repository integrations.
 - [x] Create a machine-readable maintenance baseline with verified status and unresolved blockers.
+- [x] Add visible repository health status documentation for the hourly validation workflow.
+- [x] Document a safe, prioritized process for reviewing the outstanding dependency alerts.
+- [x] Re-validate the project and confirm the health workflow remains successful.
+- [x] Code-split the Markdown renderer to reduce the initial client bundle warning.
+- [x] Further split production client chunks until the build no longer reports the >500 kB warning.
+- [ ] Verify the hourly health workflow on the latest optimization commit and record its run ID.
